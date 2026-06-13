@@ -1,0 +1,15 @@
+# MATLAB
+*.asv
+*.m~
+*.autosave
+slprj/
+codegen/
+*.mex*
+
+# Temp render frames (phase4 cleans these up; ignore as a safety net)
+results/_frame_tmp.png
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
