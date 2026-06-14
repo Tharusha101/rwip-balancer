@@ -55,24 +55,48 @@ with effective coefficients `I_p = I_arm + m_w·l_w²` and `mgl = m_p·l + m_w·
 ## Repository layout
 
 ```
-balance/
+rwip-balancer/
 ├── README.md                      this file
+├── LICENSE                        MIT
+├── .github/workflows/
+│   └── matlab-tests.yml           CI: runs the Phase-1 verification on push/PR
+├── docs/
+│   └── wiring_planned.svg         planned ESP32 / MPU6050 / DRV8833 wiring
 ├── notes/
-│   └── EOM_derivation.md          Lagrangian derivation + sign conventions
+│   ├── EOM_derivation.md          Lagrangian derivation + sign conventions
+│   ├── phase2_lqr.md              linearization + LQR design notes
+│   ├── phase3_robustness.md       PID vs LQR + robustness study
+│   ├── phase4_visualization.md    animation + disturbance notes
+│   └── phase5_handoff.md          ESP32 implementation spec (gains, HAL, safety)
 ├── src/
 │   ├── rwip_params.m              physical params -> struct (+ derived coeffs)
 │   ├── rwip_dynamics.m            nonlinear state derivative for ode45
-│   └── rwip_energy.m              total mechanical energy (verification tool)
+│   ├── rwip_energy.m              total mechanical energy (verification tool)
+│   ├── rwip_linearize.m           linearize about upright -> (A,B,C,D)
+│   ├── design_lqr.m               continuous/discrete LQR gain synthesis
+│   ├── ctrl_lqr.m                 LQR control law u = -K x
+│   ├── ctrl_pid.m                 baseline PID control law
+│   ├── rwip_motor.m              brushed-DC motor model (voltage -> torque, sat.)
+│   ├── ideal_actuator.m          torque-source actuator (early phases)
+│   ├── sensor_imu.m              modeled IMU: gyro bias/noise, accel noise
+│   ├── simulate_rwip.m           continuous closed-loop sim
+│   ├── simulate_sampled.m        sampled-data (200 Hz ZOH) closed-loop sim
+│   └── draw_rwip.m               arm + wheel renderer for the animation
 ├── scripts/
-│   └── verify_dynamics.m          Phase-1 verification, prints PASS/FAIL
-└── results/                       generated plots (created on first run)
+│   ├── verify_dynamics.m          Phase-1 verification, prints PASS/FAIL
+│   ├── phase2_lqr.m               Phase-2 linearization + LQR balance
+│   ├── phase3_pid_robust.m        Phase-3 PID vs LQR + robustness
+│   ├── phase4_animate.m           Phase-4 animation + disturbance, writes GIF
+│   └── phase5_export.m            Phase-5 discretize, validate, export gains
+└── results/                       committed plots, GIF, and exported gains
+    ├── *.png, phase4_balance.gif  generated figures (see Demo)
+    ├── rwip_gains.h               drop-in C header for firmware
+    └── rwip_gains.mat             same package for MATLAB reuse
 ```
 
-Controllers (LQR, PID), linearization, the motor model, and Simulink models are
-added in later phases behind a clean interface so a different control law can
-drop in.
-
----
+> Note: `results/` holds generated artifacts committed for showcase convenience.
+> They regenerate from source — delete them and re-run the phase scripts to
+> reproduce. For a stricter repo, move them to a release or a `gh-pages` branch.
 
 ## Running the Phase-1 verification
 
@@ -137,8 +161,50 @@ limits regenerate.
 
 ---
 
+## What is proven — and what is not
+
+**Proven (in simulation).**
+- Nonlinear dynamics verified against physics: energy conservation, free-pendulum
+  equivalence, wheel angular-momentum conservation, and small-angle period
+  (`scripts/verify_dynamics.m`, PASS/FAIL gated).
+- LQR balance from an 8° tilt settles in ~1.23 s with the wheel bled back to ~0.
+- LQR vs PID: PID balances the arm but cannot regulate wheel speed; an impulse
+  "shove" drives the PID wheel to saturation while LQR bleeds the momentum off.
+- Robustness: LQR stable under gyro bias+noise, accel noise, motor lag, and 10-bit
+  PWM at 200 Hz (steady RMS θ ≈ 0.066°).
+- A validated, discretized gain is exported to `results/rwip_gains.h`/`.mat` — the
+  same gain re-validated on the full realistic chain.
+
+**Not proven (yet).**
+- **No hardware has been built or tested.** All results above are simulation.
+- **No firmware is included.** `notes/phase5_handoff.md` is a spec, not code: pin
+  assignments, the I2C/PWM HAL, and the encoder driver are left to the firmware
+  build.
+- Plant parameters in `src/rwip_params.m` are design estimates, not measured from
+  a physical rig. Measure the real rig and re-run Phases 2→5 to regenerate gains.
+- The wiring diagram in `docs/` is a **planned** schematic, not an as-built board.
+
+In short: this is a fully verified sim-first control design with a packaged
+hardware handoff — not a finished robot.
+
 ## Requirements
 
-MATLAB with Control System Toolbox (from Phase 2; `lqr`, `care`, `ss`, `tf`).
-Symbolic Math Toolbox optional (for re-deriving the EOM). Phase 1 needs only
-base MATLAB (`ode45`).
+Developed and tested on **MATLAB R2024a**.
+
+- **Base MATLAB** (`ode45`) — Phase 1 verification only.
+- **Control System Toolbox** (`lqr`, `dlqr`, `care`, `ss`, `tf`, `c2d`) — Phases 2+.
+- **Symbolic Math Toolbox** — *optional*, only to re-derive the EOM.
+
+No other toolboxes are required. CI runs the Phase-1 verification on every push
+(see `.github/workflows/matlab-tests.yml`).
+
+## Planned hardware wiring
+
+The target build is ESP32 + MPU6050 (I²C) + DRV8833 dual H-bridge + brushed DC
+motor with a wheel/motor encoder. A **planned** wiring diagram (pins are
+suggested, not yet as-built) is in [`docs/wiring_planned.svg`](docs/wiring_planned.svg):
+
+![Planned RWIP wiring](docs/wiring_planned.svg)
+
+See `notes/phase5_handoff.md` for the full signal chain, sign/unit conventions,
+DRV8833 drive, and safety logic.
