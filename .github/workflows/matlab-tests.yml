@@ -1,0 +1,31 @@
+name: MATLAB tests
+
+# Runs the Phase-1 nonlinear-dynamics verification on every push and PR.
+# verify_dynamics.m prints PASS/FAIL and exits non-zero under -batch if any
+# check fails, so a red check here means the physics verification broke.
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    name: Phase-1 verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Installs MATLAB (latest release). Requires no license for public repos
+      # via MathWorks' hosted GitHub-Actions runner support.
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v2
+        with:
+          products: Control_System_Toolbox
+
+      - name: Run Phase-1 dynamics verification
+        uses: matlab-actions/run-command@v2
+        with:
+          command: "addpath('src'); run('scripts/verify_dynamics.m');"
