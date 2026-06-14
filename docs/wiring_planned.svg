@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="640" viewBox="0 0 940 640" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="640" fill="#ffffff"/>
+  <text x="24" y="34" font-size="22" font-weight="700" fill="#1a1a1a">RWIP — planned wiring (ESP32 · MPU6050 · DRV8833)</text>
+  <text x="24" y="56" font-size="13" fill="#b25400">PLANNED schematic — pin numbers are suggested, not as-built. Verify against your boards before wiring.</text>
+
+  <!-- Legend -->
+  <rect x="700" y="70" width="216" height="86" rx="6" fill="#f6f7f9" stroke="#d0d4da"/>
+  <text x="712" y="90" font-size="12" font-weight="700" fill="#333">Wire legend</text>
+  <line x1="712" y1="104" x2="744" y2="104" stroke="#c0392b" stroke-width="3"/><text x="752" y="108" font-size="11" fill="#333">Power (VM / Vbat)</text>
+  <line x1="712" y1="120" x2="744" y2="120" stroke="#e67e22" stroke-width="3"/><text x="752" y="124" font-size="11" fill="#333">3V3 logic supply</text>
+  <line x1="712" y1="136" x2="744" y2="136" stroke="#2c3e50" stroke-width="3"/><text x="752" y="140" font-size="11" fill="#333">GND (common)</text>
+  <line x1="712" y1="152" x2="744" y2="152" stroke="#2980b9" stroke-width="3"/><text x="752" y="156" font-size="11" fill="#333">Signal (I2C / PWM / enc)</text>
+
+  <!-- ESP32 -->
+  <rect x="360" y="200" width="200" height="300" rx="10" fill="#eef3ff" stroke="#3b5bdb" stroke-width="2"/>
+  <text x="460" y="226" font-size="16" font-weight="700" fill="#1f3a93" text-anchor="middle">ESP32</text>
+  <text x="460" y="244" font-size="11" fill="#555" text-anchor="middle">200 Hz control loop</text>
+  <!-- left pins -->
+  <text x="372" y="276" font-size="12" fill="#222">3V3</text>
+  <text x="372" y="300" font-size="12" fill="#222">GND</text>
+  <text x="372" y="324" font-size="12" fill="#222">GPIO21 SDA</text>
+  <text x="372" y="348" font-size="12" fill="#222">GPIO22 SCL</text>
+  <text x="372" y="372" font-size="12" fill="#222">GPIO34 ENC_A</text>
+  <text x="372" y="396" font-size="12" fill="#222">GPIO35 ENC_B</text>
+  <text x="372" y="420" font-size="12" fill="#222">GPIO36 Vbus_sense (ADC)</text>
+  <!-- right pins -->
+  <text x="548" y="300" font-size="12" fill="#222" text-anchor="end">GPIO25 IN1 (PWM)</text>
+  <text x="548" y="324" font-size="12" fill="#222" text-anchor="end">GPIO26 IN2 (PWM)</text>
+  <text x="548" y="348" font-size="12" fill="#222" text-anchor="end">GPIO27 nSLEEP</text>
+  <text x="548" y="468" font-size="12" fill="#222" text-anchor="end">VIN (5V)</text>
+
+  <!-- MPU6050 -->
+  <rect x="80" y="250" width="180" height="120" rx="10" fill="#e9fbef" stroke="#1e8e4e" stroke-width="2"/>
+  <text x="170" y="276" font-size="15" font-weight="700" fill="#176c3c" text-anchor="middle">MPU6050 IMU</text>
+  <text x="170" y="294" font-size="11" fill="#555" text-anchor="middle">accel + gyro, I2C</text>
+  <text x="92" y="320" font-size="12" fill="#222">VCC  GND</text>
+  <text x="92" y="344" font-size="12" fill="#222">SDA  SCL</text>
+
+  <!-- Encoder -->
+  <rect x="80" y="410" width="180" height="110" rx="10" fill="#fef6e7" stroke="#c08a14" stroke-width="2"/>
+  <text x="170" y="436" font-size="15" font-weight="700" fill="#8a6209" text-anchor="middle">Wheel / motor encoder</text>
+  <text x="170" y="454" font-size="11" fill="#555" text-anchor="middle">quadrature → phi_dot</text>
+  <text x="92" y="480" font-size="12" fill="#222">VCC  GND</text>
+  <text x="92" y="504" font-size="12" fill="#222">A    B</text>
+
+  <!-- DRV8833 -->
+  <rect x="660" y="250" width="200" height="150" rx="10" fill="#fdeef0" stroke="#c0392b" stroke-width="2"/>
+  <text x="760" y="276" font-size="15" font-weight="700" fill="#922b21" text-anchor="middle">DRV8833</text>
+  <text x="760" y="294" font-size="11" fill="#555" text-anchor="middle">dual H-bridge</text>
+  <text x="672" y="320" font-size="12" fill="#222">AIN1  AIN2</text>
+  <text x="672" y="344" font-size="12" fill="#222">nSLEEP  VM</text>
+  <text x="672" y="368" font-size="12" fill="#222">AOUT1  AOUT2  GND</text>
+
+  <!-- Motor -->
+  <circle cx="760" cy="470" r="42" fill="#f1f2f4" stroke="#444" stroke-width="2"/>
+  <text x="760" y="466" font-size="13" font-weight="700" fill="#222" text-anchor="middle">DC</text>
+  <text x="760" y="482" font-size="13" font-weight="700" fill="#222" text-anchor="middle">motor</text>
+  <text x="760" y="528" font-size="11" fill="#555" text-anchor="middle">+ reaction wheel</text>
+
+  <!-- Battery -->
+  <rect x="360" y="540" width="200" height="70" rx="10" fill="#fff4f4" stroke="#c0392b" stroke-width="2"/>
+  <text x="460" y="566" font-size="14" font-weight="700" fill="#922b21" text-anchor="middle">Battery ~12 V</text>
+  <text x="460" y="586" font-size="11" fill="#555" text-anchor="middle">VM rail · buck → 5V/3V3 · measure Vbus</text>
+
+  <!-- I2C signal wires MPU<->ESP32 -->
+  <line x1="260" y1="320" x2="368" y2="324" stroke="#2980b9" stroke-width="2"/>
+  <line x1="260" y1="344" x2="368" y2="348" stroke="#2980b9" stroke-width="2"/>
+  <!-- IMU power -->
+  <line x1="200" y1="310" x2="200" y2="276" stroke="#e67e22" stroke-width="2"/>
+  <line x1="200" y1="276" x2="368" y2="272" stroke="#e67e22" stroke-width="2"/>
+  <line x1="170" y1="310" x2="170" y2="300" stroke="#2c3e50" stroke-width="2"/>
+  <line x1="170" y1="300" x2="368" y2="300" stroke="#2c3e50" stroke-width="2"/>
+
+  <!-- Encoder wires -->
+  <line x1="260" y1="500" x2="320" y2="500" stroke="#2980b9" stroke-width="2"/>
+  <line x1="320" y1="500" x2="320" y2="372" stroke="#2980b9" stroke-width="2"/>
+  <line x1="320" y1="372" x2="368" y2="372" stroke="#2980b9" stroke-width="2"/>
+  <line x1="320" y1="396" x2="368" y2="396" stroke="#2980b9" stroke-width="2"/>
+  <line x1="200" y1="476" x2="200" y2="276" stroke="#e67e22" stroke-width="1"/>
+
+  <!-- PWM ESP32 -> DRV8833 -->
+  <line x1="552" y1="296" x2="700" y2="316" stroke="#2980b9" stroke-width="2"/>
+  <line x1="552" y1="320" x2="700" y2="320" stroke="#2980b9" stroke-width="2"/>
+  <line x1="552" y1="344" x2="672" y2="344" stroke="#e67e22" stroke-width="2"/>
+
+  <!-- DRV8833 -> motor -->
+  <line x1="700" y1="368" x2="730" y2="440" stroke="#c0392b" stroke-width="2"/>
+  <line x1="760" y1="404" x2="760" y2="428" stroke="#c0392b" stroke-width="2"/>
+
+  <!-- Battery -> DRV8833 VM -->
+  <line x1="560" y1="556" x2="820" y2="556" stroke="#c0392b" stroke-width="3"/>
+  <line x1="820" y1="556" x2="820" y2="356" stroke="#c0392b" stroke-width="3"/>
+  <line x1="820" y1="356" x2="760" y2="356" stroke="#c0392b" stroke-width="3"/>
+  <!-- Battery -> ESP32 VIN (via buck, simplified) -->
+  <line x1="460" y1="540" x2="460" y2="476" stroke="#c0392b" stroke-width="2"/>
+  <!-- Vbus sense divider -->
+  <line x1="540" y1="556" x2="340" y2="556" stroke="#2980b9" stroke-width="2"/>
+  <line x1="340" y1="556" x2="340" y2="420" stroke="#2980b9" stroke-width="2"/>
+  <line x1="340" y1="420" x2="368" y2="420" stroke="#2980b9" stroke-width="2"/>
+  <!-- common GND -->
+  <line x1="460" y1="500" x2="460" y2="540" stroke="#2c3e50" stroke-width="2"/>
+
+  <text x="24" y="624" font-size="11" fill="#777">Notes: tie all GNDs common · DRV8833 nSLEEP high to enable · measure Vbus for PWM duty · phi_dot from encoder (preferred) per notes/phase5_handoff.md.</text>
+</svg>
